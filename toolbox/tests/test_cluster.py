@@ -1,5 +1,6 @@
 import pytest
-import random, pylab, numpy
+import random
+import numpy as np
 import toolbox.cluster as cluster
 
 from pathlib import Path
@@ -16,9 +17,9 @@ class Patient(cluster.Example):
     pass
 
 def scaleAttrs(vals):
-    vals = pylab.array(vals)
+    vals = np.array(vals)
     mean = sum(vals)/len(vals)
-    sd = numpy.std(vals)
+    sd = np.std(vals)
     vals = vals - mean
     return vals/sd
 
@@ -41,8 +42,8 @@ def getData(toScale = False):
     #Build points
     points = []
     for i in range(len(hrList)):
-        features = pylab.array([hrList[i], prevACSList[i],\
-                                stElevList[i], ageList[i]])
+        features = np.array([hrList[i], prevACSList[i],\
+                            stElevList[i], ageList[i]])
         pIndex = str(i)
         points.append(Patient('P'+ pIndex, features, classList[i]))
     return points
