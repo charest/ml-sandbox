@@ -11,8 +11,8 @@ import numpy as np
 TEST_DATA_DIR = futils.dirname(__file__)
 
 testdata = [
-    (False, 2, [118, 132], [0.3305, 0.3333]),
-    (True,  2, [224,  26], [0.2902, 0.6923]),
+    (False, 2, [118, 132], [0.3305, 0.3333], 83),
+    (True,  2, [224,  26], [0.2902, 0.6923], 83),
 ]
 
 
@@ -74,10 +74,18 @@ def calcClustering(patients, numClusters, seed = 0, numTrials = 5):
     random.seed(seed)
     return cluster.trykmeans(patients, numClusters, numTrials)
 
+def calcPosPatients(patients):
+    numPos = 0
+    for p in patients:
+        if p.getLabel() == 1:
+            numPos += 1
+    return numPos
+
+
 ###############################################################################
 
-@pytest.mark.parametrize('isScaled, k, ans_numPts, ans_fracs', testdata)
-def test_cluster(isScaled, k, ans_numPts, ans_fracs):
+@pytest.mark.parametrize('isScaled, k, ans_numPts, ans_fracs, ans_pos', testdata)
+def test_cluster(isScaled, k, ans_numPts, ans_fracs, ans_pos):
     patients = getData(isScaled)
     scaled_str = 'SCALED' if isScaled else 'UNSCALED'
     print('\nTest ' + scaled_str + ' k-means (k = ' + str(k) + ')')
@@ -85,6 +93,10 @@ def test_cluster(isScaled, k, ans_numPts, ans_fracs):
     numPts, posFracs = printClustering(bestClustering)
     assert numPts == ans_numPts
     assert posFracs == pytest.approx(ans_fracs, 0.001)
+
+    numPos = calcPosPatients(patients)
+    print('Total number of positive patients =', numPos)
+    assert numPos == ans_pos
     
 
 @pytest.mark.parametrize('k', (2,4,6))
@@ -101,8 +113,3 @@ def test_cluster_scale(k):
     bestClustering = calcClustering(patients, k, 2)
     inumPts, posFracs = printClustering(bestClustering)
 
-#numPos = 0
-#for p in patients:
-#    if p.getLabel() == 1:
-#        numPos += 1
-#print('Total number of positive patients =', numPos)
