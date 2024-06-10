@@ -46,6 +46,8 @@ def getData(toScale = False):
         points.append(Patient('P'+ pIndex, features, classList[i]))
     return points
 
+###############################################################################
+
 def printClustering(clustering):
     """Assumes: clustering is a sequence of clusters
        Prints information about each cluster
@@ -66,9 +68,13 @@ def printClustering(clustering):
               round(fracPos, 4))
     return nPts, posFracs
 
+###############################################################################
+
 def calcClustering(patients, numClusters, seed = 0, numTrials = 5):
     random.seed(seed)
     return cluster.trykmeans(patients, numClusters, numTrials)
+
+###############################################################################
 
 @pytest.mark.parametrize('isScaled, k, ans_numPts, ans_fracs', testdata)
 def test_cluster(isScaled, k, ans_numPts, ans_fracs):
