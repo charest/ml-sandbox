@@ -12,6 +12,7 @@ import sklearn.linear_model
 
 
 TEST_DATA_DIR = futils.dirname(__file__)
+TEST_OUTPUT_DIR = futils.dirname(__file__)
 
 ###############################################################################
 
@@ -109,6 +110,7 @@ def compareAnimals(animals, precision, fname = None):
         table.set_fontsize(10)
         table.scale(1, 2.5)
         plt.axis('off')
+        print("Writing to {}".format(fname))
         plt.savefig(fname)
 
 ###############################################################################
@@ -214,12 +216,13 @@ def buildROC(trainingSet, testSet, title, fname=None):
         plt.title(title)
         plt.xlabel('1 - specificity')
         plt.ylabel('Sensitivity')
+        print("Writing to {}".format(fname))
         plt.savefig(fname)
     return auroc
 
 ###############################################################################
 
-def test_classify_num_legs():
+def test_classify_num_legs(tmp_path):
    
     #Actual number of legs
     cobra = Animal('cobra', [1,1,1,1,0])
@@ -234,11 +237,12 @@ def test_classify_num_legs():
     animals = [cobra, rattlesnake, boa, chicken, guppy,
                dartFrog, zebra, python, alligator]
 
-    compareAnimals(animals, 3, 'distances-num-legs.png')
+    
+    compareAnimals(animals, 3, tmp_path/'distances-num-legs.png')
 
 ###############################################################################
 
-def test_classify_binary_legs():
+def test_classify_binary_legs(tmp_path):
    
     #Binary features only           
     cobra = Animal('cobra', [1,1,1,1,0])
@@ -253,7 +257,7 @@ def test_classify_binary_legs():
     animals = [cobra, rattlesnake, boa, chicken, guppy,
                dartFrog, zebra, python, alligator]
 
-    compareAnimals(animals, 3, 'distances-binary-legs.png')
+    compareAnimals(animals, 3, tmp_path/'distances-binary-legs.png')
 
 ###############################################################################
 
@@ -346,12 +350,13 @@ def test_classify_logistic_regression(examples):
 
 ###############################################################################
 
-def test_classify_roc(examples):
+def test_classify_roc(examples, tmp_path):
     """Receiving operating characteristic"""
 
     rnd.seed(0)
     trainingSet, testSet = classify.split80_20(examples)
-    auc = buildROC(trainingSet, testSet, 'ROC for Predicting Survival, 1 Split', 'roc.png')
+    
+    auc = buildROC(trainingSet, testSet, 'ROC for Predicting Survival, 1 Split', tmp_path/'roc.png')
 
     assert auc == pytest.approx(0.860056925996205, abs=1.e-6)
 
