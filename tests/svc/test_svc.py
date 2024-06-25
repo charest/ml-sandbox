@@ -82,7 +82,7 @@ def visualizeBoundary(X, y, model, fname = None):
     for i in range(X1.shape[0]):
         for j in range(X1.shape[1]):
             this_X = np.array([ X1[i,j], X2[i,j] ])
-            vals[i,j] = svm.predict(model, this_X)
+            vals[i,j] = model.predict(this_X)
     #print(np.sum(vals==0), np.sum(vals==1))
     
     pos = y==1
@@ -115,15 +115,17 @@ def datasetParams(X, y, Xval, yval):
     """
 
     vals = {}
+    
+    svc = svm.SVC()
 
     for C in [0.01, 0.03, 0.1, 0.3, 1, 3, 10, 30]:
         for sigma in [0.01, 0.03, 0.1, 0.3, 1, 3, 10, 30]:
     
             print("Training C={:.2f} sigma={:.2f}".format(C,sigma), end='')
             k = lambda x1,x2 : svm.gaussianKernel(x1, x2, sigma)
-            model = svm.train(X, y, C, k)
+            svc.train(X, y, C, k)
             
-            ytest = svm.predict(model, Xval, True)
+            ytest = svc.predict(Xval, True)
             acc = np.mean(ytest != yval)
             vals[(C,sigma)] = acc
             print(" err = {:.6f}".format(acc))
@@ -174,7 +176,7 @@ def test_gaussian_kernel():
 
 ###############################################################################
 
-def test_svm_linear(tmp_path):
+def test_svc_linear(tmp_path):
     
     # =========== Part 1: Loading and Visualizing Data =============
     # We start the exercise by first loading and visualizing the dataset. 
@@ -217,20 +219,21 @@ def test_svm_linear(tmp_path):
     # decision boundary learned.
     
     print('Training Linear SVM ...')
+    svc = svm.SVC()
     
     # You should try to change the C value below and see how the decision
     # boundary varies (e.g., try C = 1000)
     C = 1
-    model = svm.train(X, y, C, svm.linearKernel, 1e-3, 20)
-    visualizeBoundaryLinear(X, y, model, tmp_path/"ex6data1-bnd-c{:04d}.png".format(C))
+    svc.train(X, y, C, svm.linearKernel, 1e-3, 20)
+    visualizeBoundaryLinear(X, y, svc, tmp_path/"ex6data1-bnd-c{:04d}.png".format(C))
 
     C = 1000
-    model = svm.train(X, y, C, svm.linearKernel, 1e-3, 20)
-    visualizeBoundaryLinear(X, y, model, tmp_path/"ex6data1-bnd-c{:04d}.png".format(C))
+    svc.train(X, y, C, svm.linearKernel, 1e-3, 20)
+    visualizeBoundaryLinear(X, y, svc, tmp_path/"ex6data1-bnd-c{:04d}.png".format(C))
 
 ###############################################################################
 
-def test_svm_rbf(tmp_path):
+def test_svc_rbf(tmp_path):
     
     # =========== Part 1: Loading and Visualizing Data =============
     # We start the exercise by first loading and visualizing the dataset. 
@@ -276,17 +279,18 @@ def test_svm_rbf(tmp_path):
     # SVM Parameters
     C = 1
     sigma = 0.1
+    svc = svm.SVC()
     
     # We set the tolerance and max_passes lower here so that the code will run
     # faster. However, in practice, you will want to run the training to
     # convergence.
     k = lambda x1,x2 : svm.gaussianKernel(x1, x2, sigma)
-    model = svm.train(X, y, C, k)
-    visualizeBoundary(X, y, model, tmp_path/"ex6data2-bnd-c{:04d}.png".format(C))
+    svc.train(X, y, C, k)
+    visualizeBoundary(X, y, svc, tmp_path/"ex6data2-bnd-c{:04d}.png".format(C))
 
 ###############################################################################
 
-def test_svm_rbf2(tmp_path):
+def test_svc_rbf2(tmp_path):
     
     # =========== Part 1: Loading and Visualizing Data =============
     # We start the exercise by first loading and visualizing the dataset. 
@@ -337,11 +341,13 @@ def test_svm_rbf2(tmp_path):
     C, sigma = datasetParams(X, y, Xval, yval)
     #C = 0.1
     #sigma = 0.03
+    
+    svc = svm.SVC()
 
     # We set the tolerance and max_passes lower here so that the code will run
     # faster. However, in practice, you will want to run the training to
     # convergence.
     k = lambda x1,x2 : svm.gaussianKernel(x1, x2, sigma)
-    model = svm.train(X, y, C, k)
-    visualizeBoundary(X, y, model, tmp_path/"ex6data3-bnd.png")
+    svc.train(X, y, C, k)
+    visualizeBoundary(X, y, svc, tmp_path/"ex6data3-bnd.png")
 

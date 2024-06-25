@@ -231,7 +231,7 @@ def emailFeatures(word_indices, vocabMap, n):
 
 ###############################################################################
 
-def test_svm_spam(tmp_path):
+def test_svc_spam(tmp_path):
     
     # ==================== Part 1: Email Preprocessing ====================
     # To use an SVM to classify emails into Spam v.s. Non-Spam, you first need
