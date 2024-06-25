@@ -2,7 +2,7 @@
 import pytest
 
 import toolbox.cluster as cluster
-import toolbox.classify as classify
+import toolbox.classify.nearest as classify
 import toolbox.file_utils as futils
 
 import numpy as np
