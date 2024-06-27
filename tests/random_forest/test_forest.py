@@ -1,6 +1,6 @@
 import pytest
 
-import toolbox.random_forest as forest
+import toolbox.random_forest as rf
 import toolbox.file_utils as futils
 
 import csv
@@ -28,8 +28,8 @@ def str_column_to_float(dataset, column):
 ###############################################################################
 
 def test_forest_gini():
-    assert forest.gini_index([[[1, 1], [1, 0]], [[1, 1], [1, 0]]], [0, 1]) == 0.5
-    assert forest.gini_index([[[1, 0], [1, 0]], [[1, 1], [1, 1]]], [0, 1]) == 0.0 
+    assert rf.gini_index([[[1, 1], [1, 0]], [[1, 1], [1, 0]]], [0, 1]) == 0.5
+    assert rf.gini_index([[[1, 0], [1, 0]], [[1, 1], [1, 1]]], [0, 1]) == 0.0 
 
 ################################################################################
 
@@ -44,19 +44,19 @@ def test_forest_split():
         [7.444542326,0.476683375,1],
         [10.12493903,3.234550982,1],
         [6.642287351,3.319983761,1]]
-    split = forest.get_split(dataset)
+    split = rf.get_split(dataset)
     print('\nSplit: [X%d < %.3f]' % ((split['index']+1), split['value']))
     assert split['index'] == 0
     assert split['value'] == 6.642287351
 
-    forest.to_terminal(dataset) == 0
+    rf.to_terminal(dataset) == 0
 
-    tree = forest.build_tree(dataset, 3, 1)
-    forest.print_tree(tree)
+    tree = rf.build_tree(dataset, 3, 1)
+    rf.print_tree(tree)
 
     stump = {'index': 0, 'right': 1, 'value': 6.642287351, 'left': 0}
     for row in dataset:
-        prediction = forest.predict(stump, row)
+        prediction = rf.predict(stump, row)
         print('Expected=%d, Got=%d' % (row[-1], prediction))
         assert prediction == row[-1]
 
@@ -78,7 +78,7 @@ def test_forest_classify():
     n_folds = 5
     max_depth = 5
     min_size = 10
-    scores = forest.evaluate_algorithm(dataset, forest.decision_tree, n_folds, max_depth, min_size)
+    scores = rf.evaluate_algorithm(dataset, rf.decision_tree, n_folds, max_depth, min_size)
     
     for s in scores:
         assert s > 0.96 and s < 1

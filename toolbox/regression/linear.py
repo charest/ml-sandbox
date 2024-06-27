@@ -44,7 +44,6 @@ def normalEqn(X, y):
     theta = np.linalg.solve(A, b)
     return theta
     
- 
 def featureNormalize(X, mu=None, sigma=None):
     """Normalize so that mean is zero and standard deviation is 1"""
     mu_out = mu
@@ -56,6 +55,7 @@ def featureNormalize(X, mu=None, sigma=None):
     Xnorm = X - mu_out
     return Xnorm/sigma_out, mu_out, sigma_out
 
+ 
 def mapPolyFeatures(X, degree=6):
     """
     POLYFEATURES Maps X (1D vector) into the p-th power
