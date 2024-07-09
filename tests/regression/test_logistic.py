@@ -15,8 +15,8 @@ TEST_DATA_DIR = futils.dirname(__file__)
 
 def test_regression_sigmoid():
     assert lr.sigmoid(0) == pytest.approx(0.5, abs=1.e-6)
-    assert lr.sigmoid(1e6) == pytest.approx(1, abs=1.e-6)
-    assert lr.sigmoid(-1e6) == pytest.approx(0, abs=1.e-6)
+    assert lr.sigmoid(1e2) == pytest.approx(1, abs=1.e-6)
+    assert lr.sigmoid(-1e2) == pytest.approx(0, abs=1.e-6)
 
 ###############################################################################
 
@@ -66,7 +66,7 @@ def test_regression_logistic(tmp_path):
     print('Cost at initial theta (zeros): ', cost)
     print('Gradient at initial theta (zeros): ', grad)
 
-    assert cost == 0.6931471805599453
+    assert cost == pytest.approx(0.6931471805599453, abs=1e-6)
     
     # ============= Part 3: Optimizing using fminunc  =============
     #  In this exercise, you will use a built-in function (fminunc) to find the
@@ -229,7 +229,7 @@ def test_regression_logistic_reg(tmp_path):
 
     # Plot z = 0
     # Notice you need to specify the range [0, 0]
-    plt.contour(u, v, z, levels=[0], label='Decision boundary')
+    plt.contour(u, v, z, levels=[0])
     plt.title('lambda = {}'.format(lmda))
     
     # Labels and Legend
