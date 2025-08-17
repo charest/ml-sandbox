@@ -1,6 +1,5 @@
 import pytest
 
-from toolbox.cluster import Example
 import toolbox.cluster.kmeans as kmeans
 import toolbox.file_utils as futils
 import toolbox.math_utils as mutils
@@ -18,36 +17,6 @@ testdata = [
     (True,  2, [224,  26], [0.2902, 0.6923], 83),
 ]
 
-
-class Patient(Example):
-    pass
-
-###############################################################################
-
-def getData(toScale = False):
-    """read in data"""
-    hrList, stElevList, ageList, prevACSList, classList = [],[],[],[],[]
-    cardiacData = open(TEST_DATA_DIR/'cardiacData.txt', 'r')
-    for l in cardiacData:
-        l = l.split(',')
-        hrList.append(int(l[0]))
-        stElevList.append(int(l[1]))
-        ageList.append(int(l[2]))
-        prevACSList.append(int(l[3]))
-        classList.append(int(l[4]))
-    if toScale:
-        hrList = mutils.normalize_by_std(hrList)
-        stElevList = mutils.normalize_by_std(stElevList)
-        ageList = mutils.normalize_by_std(ageList)
-        prevACSList = mutils.normalize_by_std(prevACSList)
-    #Build points
-    points = []
-    for i in range(len(hrList)):
-        features = np.array([hrList[i], prevACSList[i],\
-                            stElevList[i], ageList[i]])
-        pIndex = str(i)
-        points.append(Patient('P'+ pIndex, features, classList[i]))
-    return points
 
 ###############################################################################
 
@@ -88,8 +57,9 @@ def calcPosPatients(patients):
 ###############################################################################
 
 @pytest.mark.parametrize('isScaled, k, ans_numPts, ans_fracs, ans_pos', testdata)
-def test_kmeans(isScaled, k, ans_numPts, ans_fracs, ans_pos):
-    patients = getData(isScaled)
+def test_kmeans(CardiacFixture, isScaled, k, ans_numPts, ans_fracs, ans_pos):
+    CardiacFixture.getData(isScaled)
+    patients = CardiacFixture.points
     scaled_str = 'SCALED' if isScaled else 'UNSCALED'
     print('\nTest ' + scaled_str + ' k-means (k = ' + str(k) + ')')
     bestClustering = calcClustering(patients, k, 2)
@@ -103,15 +73,17 @@ def test_kmeans(isScaled, k, ans_numPts, ans_fracs, ans_pos):
     
 
 @pytest.mark.parametrize('k', (2,4,6))
-def test_kmeans_no_scale(k):
-    patients = getData()
+def test_kmeans_no_scale(CardiacFixture, k):
+    CardiacFixture.getData()
+    patients = CardiacFixture.points 
     print('\nTest UNSCALED k-means (k = ' + str(k) + ')')
     bestClustering = calcClustering(patients, k, 2)
     inumPts, posFracs = printClustering(bestClustering)
 
 @pytest.mark.parametrize('k', (2,4,6))
-def test_kmeans_scale(k):
-    patients = getData(True)
+def test_kmeans_scale(CardiacFixture, k):
+    CardiacFixture.getData(True)
+    patients = CardiacFixture.points 
     print('\nTest SCALED k-means (k = ' + str(k) + ')')
     bestClustering = calcClustering(patients, k, 2)
     inumPts, posFracs = printClustering(bestClustering)
@@ -193,7 +165,7 @@ def test_kmeans_2(tmp_path):
 
 ###############################################################################
 
-def test_kmeans_png(tmp_path, BirdImage):
+def test_kmeans_png(tmp_path, BirdFixture):
     
 
     # ============= Part 4: K-Means Clustering on Pixels ===============
@@ -204,9 +176,9 @@ def test_kmeans_png(tmp_path, BirdImage):
     print('Running K-Means clustering on pixels from an image.');
     
     #  Load an image of a bird
-    A = BirdImage
+    BirdFixture.loadData()
 
-    A = A / 255 # Divide by 255 so that all values are in the range 0 - 1
+    A = BirdFixture.A / 255 # Divide by 255 so that all values are in the range 0 - 1
     
     # Size of the image
     img_size = A.shape

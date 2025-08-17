@@ -164,15 +164,16 @@ def test_cofi_cost_function():
 
 ###############################################################################
 
-def test_anomoly_recommender(tmp_path, MovieDataset, MovieParams):
+def test_anomoly_recommender(tmp_path, MovieFixture):
     
     # =============== Part 1: Loading movie ratings dataset ================
     # You will start by loading the movie ratings dataset to understand the
     # structure of the data.
     print('Loading movie ratings dataset.')
+    MovieFixture.loadRatings()
     
-    Y = MovieDataset.Y
-    R = MovieDataset.R
+    Y = MovieFixture.Y
+    R = MovieFixture.R
 
     # Y is a 1682x943 matrix, containing ratings (1-5) of 1682 movies on 
     # 943 users
@@ -199,15 +200,16 @@ def test_anomoly_recommender(tmp_path, MovieDataset, MovieParams):
     # cofiCostFunc.m to return J.
     
     # Load pre-trained weights (X, Theta, num_users, num_movies, num_features)
+    MovieFixture.loadWeights()
     
     # Reduce the data set size so that this runs faster
     num_users = 4
     num_movies = 5
     num_features = 3
-    X = MovieParams.X[:num_movies,:num_features]
-    Theta = MovieParams.Theta[:num_users, :num_features]
-    Y = MovieDataset.Y[:num_movies, :num_users]
-    R = MovieDataset.R[:num_movies, :num_users]
+    X = MovieFixture.X[:num_movies,:num_features]
+    Theta = MovieFixture.Theta[:num_users, :num_features]
+    Y = MovieFixture.Y[:num_movies, :num_users]
+    R = MovieFixture.R[:num_movies, :num_users]
     
     # Evaluate cost function
     J,_ = cofiCostFunc(pack(X,Theta), Y, R, num_users, num_movies, num_features, 0)
@@ -219,10 +221,12 @@ def test_anomoly_recommender(tmp_path, MovieDataset, MovieParams):
 
 ###############################################################################
 
-def test_anomoly_movies(tmp_path, MovieList, MovieDataset):
+def test_anomoly_movies(tmp_path, MovieFixture):
+
+    MovieFixture.loadMovies()
 
     # Initialize my ratings
-    movieList = MovieList.list
+    movieList = MovieFixture.list
     n = len(movieList)
     my_ratings = np.zeros(n)
 
@@ -255,10 +259,12 @@ def test_anomoly_movies(tmp_path, MovieList, MovieDataset):
     # dataset of 1682 movies and 943 users
     
     print('Training collaborative filtering...')
+
+    MovieFixture.loadRatings()
     
     # Add our own ratings to the data matrix
-    Y = np.column_stack( (my_ratings, MovieDataset.Y) )
-    R = np.column_stack( (my_ratings != 0, MovieDataset.R) )
+    Y = np.column_stack( (my_ratings, MovieFixture.Y) )
+    R = np.column_stack( (my_ratings != 0, MovieFixture.R) )
     
     # Normalize Ratings
     Ynorm, Ymean = normalizeRatings(Y, R)

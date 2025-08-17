@@ -88,12 +88,12 @@ def buildROC(trainingSet, testSet, title, fname=None):
 
 ###############################################################################
 
-def test_sklearn_lr(TitanicExamples):
+def test_sklearn_lr(TitanicFixture):
 
     rnd.seed(0)
     numSplits = 10
     print('Average of', numSplits, '80/20 splits LR')
-    truePos, falsePos, trueNeg, falseNeg = randomSplits(TitanicExamples, lr, numSplits)
+    truePos, falsePos, trueNeg, falseNeg = randomSplits(TitanicFixture, lr, numSplits)
     
     assert truePos  == pytest.approx( 61.2, abs=1.e-6)
     assert falsePos == pytest.approx( 21.5, abs=1.e-6)
@@ -102,7 +102,7 @@ def test_sklearn_lr(TitanicExamples):
     
     
     print('Average of LOO testing using LR')
-    truePos, falsePos, trueNeg, falseNeg = leaveOneOut(TitanicExamples, lr)
+    truePos, falsePos, trueNeg, falseNeg = leaveOneOut(TitanicFixture, lr)
    
     assert truePos  == 301
     assert falsePos == 99
@@ -110,7 +110,7 @@ def test_sklearn_lr(TitanicExamples):
     assert falseNeg == 126
 
     #Look at weights
-    trainingSet, testSet = split80_20(TitanicExamples)
+    trainingSet, testSet = split80_20(TitanicFixture)
     model = buildModel(trainingSet)
 
     print('model.classes_ =', model.classes_)
@@ -132,7 +132,7 @@ def test_sklearn_lr(TitanicExamples):
     
     #Look at changing prob
     rnd.seed(0)
-    trainingSet, testSet = split80_20(TitanicExamples)
+    trainingSet, testSet = split80_20(TitanicFixture)
     model = buildModel(trainingSet)
     print('Try p = 0.1')
     truePos, falsePos, trueNeg, falseNeg = applyModel(model, testSet, 'Survived', 0.1)
@@ -143,11 +143,11 @@ def test_sklearn_lr(TitanicExamples):
 
 ###############################################################################
 
-def test_sklearn_roc(TitanicExamples, tmp_path):
+def test_sklearn_roc(TitanicFixture, tmp_path):
     """Receiving operating characteristic"""
 
     rnd.seed(0)
-    trainingSet, testSet = split80_20(TitanicExamples)
+    trainingSet, testSet = split80_20(TitanicFixture)
     
     auc = buildROC(trainingSet, testSet, 'ROC for Predicting Survival, 1 Split', tmp_path/'roc.png')
 

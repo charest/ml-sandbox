@@ -85,7 +85,7 @@ def buildTitanicExamples(fileName):
 ###############################################################################
 
 @pytest.fixture
-def TitanicExamples():
+def TitanicFixture():
     examples = buildTitanicExamples(TEST_DATA_DIR / 'TitanicPassengers.txt')
     print('\nFinish processing', len(examples), 'passengers\n')    
     assert len(examples) == 1046

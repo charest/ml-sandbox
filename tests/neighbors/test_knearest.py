@@ -12,14 +12,14 @@ TEST_DATA_DIR = futils.dirname(__file__)
 
 ###############################################################################
 
-def test_classify_knearest(TitanicExamples):
+def test_classify_knearest(TitanicFixture):
 
     knn = lambda training, testSet:kn.KNearestClassify(training, testSet, 'Survived', 3)
 
     rnd.seed(0)
     numSplits = 10
     print('Average of', numSplits, '80/20 splits using KNN (k=3)')
-    truePos, falsePos, trueNeg, falseNeg = randomSplits(TitanicExamples, knn, numSplits)
+    truePos, falsePos, trueNeg, falseNeg = randomSplits(TitanicFixture, knn, numSplits)
         
     assert truePos  == pytest.approx( 58.8, abs=1.e-6)
     assert falsePos == pytest.approx( 19.9, abs=1.e-6)
@@ -27,7 +27,7 @@ def test_classify_knearest(TitanicExamples):
     assert falseNeg == pytest.approx( 29.0, abs=1.e-6)
     
     print('Average of LOO testing using KNN (k=3)')
-    truePos, falsePos, trueNeg, falseNeg = leaveOneOut(TitanicExamples, knn)
+    truePos, falsePos, trueNeg, falseNeg = leaveOneOut(TitanicFixture, knn)
   
     assert truePos  == 283
     assert falsePos == 98

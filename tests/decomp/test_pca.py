@@ -107,15 +107,16 @@ def test_pca(tmp_path):
     
 ###############################################################################
 
-def test_pca_faces(tmp_path, FacesDataset):
+def test_pca_faces(tmp_path, FacesFixture):
 
     # =============== Part 4: Loading and Visualizing Face Data =============
     # We start the exercise by first loading and visualizing the dataset.
     # The following code will load the dataset into your environment
     print('Loading face dataset.')
+    FacesFixture.loadData()
     
     # Load Face dataset
-    X = FacesDataset
+    X = FacesFixture.X
     
     # Display the first 100 faces in the dataset
     displayData(X[:100,:], fname=tmp_path/"ex7faces.png")
@@ -176,7 +177,7 @@ def test_pca_faces(tmp_path, FacesDataset):
 
 ###############################################################################
 
-def test_pca_bird(tmp_path, BirdImage):
+def test_pca_bird(tmp_path, BirdFixture):
 
     # === Part 8(a): Optional (ungraded) Exercise: PCA for Visualization ===
     # One useful application of PCA is to use it to visualize high-dimensional
@@ -186,9 +187,9 @@ def test_pca_bird(tmp_path, BirdImage):
     
     # Re-load the image from the previous exercise and run K-Means on it
     # For this to work, you need to complete the K-Means assignment first
-    A = BirdImage
+    BirdFixture.loadData()
 
-    A = A / 255
+    A = BirdFixture.A / 255
     img_size = A.shape
     X = np.reshape(A, (img_size[0] * img_size[1], 3))
     K = 16

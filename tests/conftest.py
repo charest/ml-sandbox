@@ -1,5 +1,7 @@
 import pytest
-from fixtures.fixture_titanic import TitanicExamples
-from fixtures.fixture_bird import BirdImage
-from fixtures.fixture_faces import FacesDataset
-from fixtures.fixture_movies import MovieDataset, MovieParams, MovieList
+from fixtures.fixture_titanic import TitanicFixture
+from fixtures.fixture_bird import BirdFixture
+from fixtures.fixture_faces import FacesFixture
+from fixtures.fixture_movies import MovieFixture
+from fixtures.fixture_handwriting import HandwritingFixture
+from fixtures.fixture_cardiac import CardiacFixture

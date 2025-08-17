@@ -5,6 +5,8 @@ import toolbox.file_utils as futils
 import toolbox.regression.logistic as lr
 import toolbox.regression.neural as nn
 
+from fixtures.fixture_handwriting import displayData
+
 import numpy as np
 import scipy.io as sio
 from scipy.optimize import minimize
@@ -219,65 +221,10 @@ def checkNNGradients(lmda=0):
     print('Relative Difference: {}'.format(diff))
     assert diff < 1.e-9
 
-###############################################################################
-
-def displayData(X, fname=None, width=None):
-
-    # Set example_width automatically if not passed in
-    assert X.ndim == 2
-    example_width = int(np.sqrt(X.shape[1])) if width == None else width
-
-
-    # Compute rows, cols
-    (m, n) = X.shape
-    example_height = int(n / example_width)
-
-    # Compute number of items to display
-    display_rows = int(np.floor(np.sqrt(m)))
-    display_cols = int(np.ceil(m / display_rows))
-    
-    # Between images padding
-    pad = 1
-    
-    # Setup blank display
-    display_array = - np.ones((pad + display_rows * (example_height + pad),
-                               pad + display_cols * (example_width  + pad) ))
-
-    curr_ex = 0
-    for i,j in np.ndindex((display_rows, display_cols)):
-
-        if curr_ex == m:
-            break 
-        # Copy the patch
-        patch = np.reshape(X[curr_ex, :], (example_height, example_width))
-        
-        # Get the max value of the patch
-        max_val = max(abs(X[curr_ex, :]))
-        start_i = pad + i * (example_height + pad)
-        start_j = pad + j * (example_width + pad)
-        display_array[start_i:start_i+example_height,
-                      start_j:start_j+example_width] = patch / max_val
-
-        curr_ex = curr_ex + 1
-        if curr_ex == m:
-            break
-
-    # Copy each example into a patch on the display array
-    fig, ax = plt.subplots()
-    ax.imshow(display_array, cmap='gray', aspect='auto')
-
-    if fname == None:
-        plt.show()
-    else:
-        print("Writing to {}".format(fname))
-        plt.savefig(fname)
-
-    plt.close()
-
 
 ###############################################################################
 
-def test_neural_feedforward_predict(tmp_path):
+def test_neural_feedforward_predict(tmp_path, HandwritingFixture):
 
     # Setup the parameters you will use for this exercise
     input_layer_size  = 400  # 20x20 Input Images of Digits
@@ -291,25 +238,11 @@ def test_neural_feedforward_predict(tmp_path):
     
     # Load Training Data
     print('\nLoading and Visualizing Data ...')
-    
-    
-    data = sio.loadmat(TEST_DATA_DIR/"ex4data1.mat")
-    assert 'X' in data.keys()
-    assert 'y' in data.keys()
 
-    print("\nData keys:")
-    print("  ", list(data.keys()))
+    HandwritingFixture.loadData()
     
-    X = data['X']
-    y = data['y']
-
-    assert X.ndim == 2
-    assert X.shape == (5000, 400)
-    
-    assert y.ndim == 2
-    assert y.shape == (5000,1)
-
-    y = y.ravel()
+    X = HandwritingFixture.X
+    y = HandwritingFixture.y
 
     # number of training examples
     m = X.shape[0]
@@ -320,27 +253,12 @@ def test_neural_feedforward_predict(tmp_path):
     # neural network parameters.
     
     print('Loading Saved Neural Network Parameters ...')
+
+    HandwritingFixture.loadWeights()
+        
+    Theta1 = HandwritingFixture.Theta1
+    Theta2 = HandwritingFixture.Theta2
     
-    # Load the weights into variables Theta1 and Theta2
-    weights = sio.loadmat(TEST_DATA_DIR/"ex4weights.mat")
-    
-    print("\nWeight keys:")
-    print("  ", list(weights.keys()))
-
-    assert 'Theta1'in weights.keys()
-    assert 'Theta2'in weights.keys()
-
-    Theta1 = weights['Theta1']
-    Theta2 = weights['Theta2']
-
-    assert Theta1.ndim == 2
-    assert Theta2.ndim == 2
-    assert Theta1.shape == (25, 401)
-    assert Theta2.shape == (10, 26)
-
-    print("Shape of Theta1: ", Theta1.shape)
-    print("Shape of Theta2: ", Theta2.shape)
-
     # ================= Part 3: Implement Predict =================
     # After training the neural network, we would like to use it to predict
     # the labels. You will now implement the "predict" function to use the
@@ -357,7 +275,7 @@ def test_neural_feedforward_predict(tmp_path):
 
 ###############################################################################
 
-def test_neural_feedforward(tmp_path):
+def test_neural_feedforward(tmp_path, HandwritingFixture):
 
     # Setup the parameters you will use for this exercise
     input_layer_size  = 400  # 20x20 Input Images of Digits
@@ -372,24 +290,10 @@ def test_neural_feedforward(tmp_path):
     # Load Training Data
     print('\nLoading and Visualizing Data ...')
     
+    HandwritingFixture.loadData()
     
-    data = sio.loadmat(TEST_DATA_DIR/"ex4data1.mat")
-    assert 'X' in data.keys()
-    assert 'y' in data.keys()
-
-    print("\nData keys:")
-    print("  ", list(data.keys()))
-    
-    X = data['X']
-    y = data['y']
-
-    assert X.ndim == 2
-    assert X.shape == (5000, 400)
-    
-    assert y.ndim == 2
-    assert y.shape == (5000,1)
-
-    y = y.ravel()
+    X = HandwritingFixture.X
+    y = HandwritingFixture.y
 
     # number of training examples
     m = X.shape[0]
@@ -401,25 +305,10 @@ def test_neural_feedforward(tmp_path):
     
     print('Loading Saved Neural Network Parameters ...')
     
-    # Load the weights into variables Theta1 and Theta2
-    weights = sio.loadmat(TEST_DATA_DIR/"ex4weights.mat")
+    HandwritingFixture.loadWeights()
     
-    print("\nWeight keys:")
-    print("  ", list(weights.keys()))
-
-    assert 'Theta1'in weights.keys()
-    assert 'Theta2'in weights.keys()
-
-    Theta1 = weights['Theta1']
-    Theta2 = weights['Theta2']
-
-    assert Theta1.ndim == 2
-    assert Theta2.ndim == 2
-    assert Theta1.shape == (25, 401)
-    assert Theta2.shape == (10, 26)
-
-    print("Shape of Theta1: ", Theta1.shape)
-    print("Shape of Theta2: ", Theta2.shape)
+    Theta1 = HandwritingFixture.Theta1
+    Theta2 = HandwritingFixture.Theta2
 
     # Unroll parameters 
     nn_params = pack( Theta1, Theta2 )
